@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  chaliceDemo:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: BankPayments
+      AttributeDefinitions:
+        - AttributeName: "AccountID"
+          AttributeType: "S"
+        - AttributeName: "PaymentID"
+          AttributeType: "S"
+        - AttributeName: "SchedualedDate"
+          AttributeType: "S"
+        - AttributeName: "PaymentStatus"
+          AttributeType: "S"
+        - AttributeName: "StatusAccountID"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "AccountID"
+          KeyType: "HASH"
+        - AttributeName: "PaymentID"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "10"
+        WriteCapacityUnits: "10"
+      GlobalSecondaryIndexes: 
+        - 
+          IndexName: "date_by_status-index"
+          KeySchema: 
+            - 
+              AttributeName: "SchedualedDate"
+              KeyType: "HASH"
+            - 
+              AttributeName: "PaymentStatus"
+              KeyType: "RANGE"
+          Projection: 
+            ProjectionType: "ALL"
+          ProvisionedThroughput: 
+            ReadCapacityUnits: "10"
+            WriteCapacityUnits: "10"
+        - 
+          IndexName: "schedualed_user_by_date-index"
+          KeySchema: 
+            - 
+              AttributeName: "StatusAccountID"
+              KeyType: "HASH"
+            - 
+              AttributeName: "SchedualedDate"
+              KeyType: "RANGE"
+          Projection: 
+            ProjectionType: "ALL"
+          ProvisionedThroughput: 
+            ReadCapacityUnits: "10"
+            WriteCapacityUnits: "10"
+
+Outputs:
+  TableName:
+    Value: !Ref "BankPayments"
+    Description: Name of the newly created DynamoDB table
